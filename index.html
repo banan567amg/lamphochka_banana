@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Интерактивная реалистичная 3D лампочка с возможностью включения/выключения. Адаптировано под все устройства.">
+    <meta name="keywords" content="лампочка, 3D лампочка, интерактивная лампочка, включить свет, мобильная версия, адаптивный дизайн">
+    <meta name="author" content="Ваше имя или компания">
+    <meta property="og:title" content="Адаптивная 3D лампочка - работает на любом устройстве">
+    <meta property="og:description" content="Попробуйте включить свет на любом устройстве - от смартфона до компьютера">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://ваш-сайт.com/лампочка">
+    <meta property="og:image" content="https://ваш-сайт.com/images/лампочка-preview.jpg">
+    <link rel="canonical" href="https://ваш-сайт.com/лампочка">
+    <title>3D лампочка</title>
+    <style>
+        :root {
+            --bulb-size: min(15vw, 80px);
+            --base-width: calc(var(--bulb-size) * 0.5);
+            --base-height: calc(var(--bulb-size) * 0.375);
+            --thread-width: calc(var(--bulb-size) * 0.125);
+            --thread-height: calc(var(--bulb-size) * 0.1875);
+            --filament-width: calc(var(--bulb-size) * 0.05);
+            --filament-height: calc(var(--bulb-size) * 0.375);
+            --reflection-size: calc(var(--bulb-size) * 0.25);
+            --button-font-size: min(4vw, 18px);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #000000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            transition: background-color 0.5s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .background-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            opacity: 0;
+            transition: opacity 1.5s ease-in-out;
+            z-index: -1;
+        }
+
+        .light-on .background-image {
+            opacity: 1;
+        }
+
+        .lamp-container {
+            position: relative;
+            margin-bottom: min(8vw, 40px);
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .bulb {
+            width: var(--bulb-size);
+            height: var(--bulb-size);
+            background-color: #333;
+            border-radius: 50%;
+            position: relative;
+            transition: all 0.3s;
+            box-shadow: inset 5px 5px 10px rgba(0,0,0,0.5);
+        }
+
+        .bulb::before {
+            content: "";
+            position: absolute;
+            top: -5px;
+            left: 10px;
+            width: calc(var(--bulb-size) * 0.75);
+            height: calc(var(--bulb-size) * 0.375);
+            background-color: #333;
+            border-radius: 50%;
+        }
+
+        .bulb-on {
+            background-color: #fff8b0;
+            box-shadow: 
+                0 0 calc(var(--bulb-size) * 0.25) #fff8b0,
+                0 0 calc(var(--bulb-size) * 0.5) #fff8b0,
+                0 0 calc(var(--bulb-size) * 0.75) #fff8b0,
+                inset 0 0 calc(var(--bulb-size) * 0.125) rgba(255,255,255,0.8);
+        }
+
+        .base {
+            width: var(--base-width);
+            height: var(--base-height);
+            background: linear-gradient(to right, #888, #ccc, #888);
+            border-radius: 3px;
+            position: relative;
+            top: -5px;
+            z-index: 2;
+        }
+
+        .thread {
+            width: var(--thread-width);
+            height: var(--thread-height);
+            background: linear-gradient(to right, #666, #999, #666);
+            border-radius: 2px;
+            position: relative;
+            top: calc(var(--bulb-size) * -0.1875);
+            z-index: 1;
+        }
+
+        .filament {
+            position: absolute;
+            width: var(--filament-width);
+            height: var(--filament-height);
+            background-color: transparent;
+            top: calc(var(--bulb-size) * 0.5);
+            left: 50%;
+            transform: translateX(-50%);
+            transition: all 0.3s;
+        }
+
+        .filament::before, .filament::after {
+            content: "";
+            position: absolute;
+            width: calc(var(--filament-width) * 0.5);
+            height: calc(var(--filament-height) * 0.833);
+            background-color: #555;
+            border-radius: 1px;
+            transition: all 0.3s;
+        }
+
+        .filament::before {
+            left: 0;
+            transform: rotate(10deg);
+        }
+
+        .filament::after {
+            right: 0;
+            transform: rotate(-10deg);
+        }
+
+        .bulb-on .filament::before,
+        .bulb-on .filament::after {
+            background-color: #ffcc00;
+            box-shadow: 0 0 calc(var(--bulb-size) * 0.125) #ffcc00;
+        }
+
+        .reflection {
+            position: absolute;
+            width: var(--reflection-size);
+            height: var(--reflection-size);
+            background-color: rgba(255,255,255,0.3);
+            border-radius: 50%;
+            top: calc(var(--bulb-size) * 0.1875);
+            left: calc(var(--bulb-size) * 0.1875);
+            transition: all 0.3s;
+        }
+
+        .bulb-on .reflection {
+            background-color: rgba(255,255,255,0.8);
+        }
+
+        button {
+            padding: min(3vw, 12px) min(6vw, 24px);
+            font-size: var(--button-font-size);
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            z-index: 1;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+        }
+
+        .light-on button {
+            background-color: #f44336;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .light-on button:hover {
+            background-color: #d32f2f;
+        }
+
+        /* Адаптация для очень маленьких экранов */
+        @media (max-width: 400px) {
+            :root {
+                --bulb-size: 60px;
+            }
+        }
+
+        /* Ландшафтная ориентация на мобильных */
+        @media (max-height: 500px) and (orientation: landscape) {
+            body {
+                flex-direction: row;
+                gap: 20px;
+            }
+            .lamp-container {
+                margin-bottom: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="background-image" aria-hidden="true"></div>
+    <div class="lamp-container" role="img" aria-label="3D модель лампочки">
+        <div class="bulb" id="bulb">
+            <div class="reflection"></div>
+            <div class="filament"></div>
+        </div>
+        <div class="thread"></div>
+        <div class="base"></div>
+    </div>
+    <button id="toggleButton" aria-pressed="false" aria-label="Включить или выключить свет">Включить свет</button>
+
+    <script>
+        const bulb = document.getElementById('bulb');
+        const toggleButton = document.getElementById('toggleButton');
+        const body = document.body;
+        const backgroundImage = document.querySelector('.background-image');
+
+        // Укажите URL вашего изображения здесь
+        const imageUrl = 'i.webp'; // Замените на реальный URL
+        
+        // Устанавливаем фоновое изображение
+        backgroundImage.style.backgroundImage = `url('${imageUrl}')`;
+
+        let isLightOn = false;
+
+        // Обработчик клика
+        function toggleLight() {
+            isLightOn = !isLightOn;
+            
+            if (isLightOn) {
+                body.classList.add('light-on');
+                bulb.classList.add('bulb-on');
+                toggleButton.textContent = 'Выключить свет';
+                toggleButton.setAttribute('aria-pressed', 'true');
+            } else {
+                body.classList.remove('light-on');
+                bulb.classList.remove('bulb-on');
+                toggleButton.textContent = 'Включить свет';
+                toggleButton.setAttribute('aria-pressed', 'false');
+            }
+        }
+
+        toggleButton.addEventListener('click', toggleLight);
+        
+        // Добавляем обработчик для сенсорных устройств
+        toggleButton.addEventListener('touchstart', function(e) {
+            e.preventDefault();
+            toggleLight();
+        }, {passive: false});
+    </script>
+</body>
+</html>
